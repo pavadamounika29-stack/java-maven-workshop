@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         PATH = "/opt/apache-maven-3.9.4/bin:$PATH"
-        SCANNER_HOME = tool 'sonar-scanner'
+        REGISTRY   = "localhost:5000"
+        IMAGE_NAME = "java-maven-app"
     }
 
     stages {
@@ -12,22 +13,18 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-        stage('Test') {
+
+        // Keep your existing SonarQube stage here if you have one
+
+        stage('Docker Build') {
             steps {
-                sh 'mvn test'
+                sh "docker build -t ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER} ."
             }
         }
-        stage('SonarQube Analysis') {
+
+        stage('Docker Push') {
             steps {
-                withSonarQubeEnv('sonar-server') {
-                    sh '''
-                        $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.scanner.javaOpts="-Xmx1536m" \
-                        -Dsonar.projectKey=pavadamounika29-stack_java-maven-workshop \
-                        -Dsonar.organization=pavadamounika29-stack \
-                        -Dsonar.java.binaries=target/classes
-                    '''
-                }
+                sh "docker push ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
             }
         }
     }
