@@ -1,4 +1,3 @@
-java
 package com.workshop;
 
 public class App {
