@@ -4,7 +4,6 @@ pipeline {
     environment {
         PATH = "/opt/apache-maven-3.9.4/bin:$PATH"
         SCANNER_HOME = tool 'sonar-scanner'
-        SONAR_SCANNER_OPTS = "-Xmx1024m"
     }
 
     stages {
@@ -23,6 +22,7 @@ pipeline {
                 withSonarQubeEnv('sonar-server') {
                     sh '''
                         $SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.scanner.javaOpts="-Xmx1536m" \
                         -Dsonar.projectKey=pavadamounika29-stack_java-maven-workshop \
                         -Dsonar.organization=pavadamounika29-stack \
                         -Dsonar.java.binaries=target/classes
